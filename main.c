@@ -1,53 +1,71 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include<math.h>
-#include<ctype.h>
+#include <ctype.h>
 #define SIZE 20
 struct stack{
 int top;
-float data[SIZE]
+char data[SIZE]
 };
 typedef struct stack STACK;
-void push(STACK *s,float item){
+void push(STACK *s, char item){
 s->data[++(s->top)]=item;
 }
-float pop(STACK *s){
-return s->data[(s->top)--];
+char pop (STACK *s){
+    return s->data[(s->top)--];
 }
-float compute(float oper1,char symbol,float oper2){
+int preced(char symbol){
 switch(symbol){
-case '+':return oper1 + oper2;
-case '-':return oper1 - oper2;
-case '*':return oper1 * oper2;
-case '/':return oper1 / oper2;
-case '^':return pow(oper1,oper2);
+case '^':return 5;
+case '*':
+case '/':return 3;
+case '+':
+case '-':return 1;
 }
 }
-float Eval_postfix(STACK *s, char postfix[15]){
-    char symbol;
-    int i;
-    float oper1,oper2,res;
-    for(i=0;postfix[i]!='\0';i++){
-        symbol = postfix[i];
-        if(isdigit(symbol))
-            push(s,symbol-'0');
-        else{
-            oper2 = pop(s);
-            oper1 = pop(s);
-            res = compute(oper1,symbol,oper2);
-            push(s,res);
+void infixtopostfix(STACK *s, char infix[20])
+{
+    int i,j=0;
+    char symbol, postfix[20],temp;
+    for(i=0; infix[i]!='\0'; i++){
+        symbol = infix[i];
+        if(isalnum(symbol))
+            postfix[j++] = symbol;
+        else {
+            switch(symbol){
+            case '(':push(s,symbol);
+            break;
+            case ')':temp=pop(s);
+            while(temp!='('){
+                    postfix[j++]=temp;
+                    temp = pop(s);
+                  }
+                  break;
+            case'+':
+            case '-':
+            case '*':
+            case '/':
+            case '^':if(s->top == -1 || s->data[s->top]=='(')
+                    push(s,symbol);
+                else{
+                    while(preced(s->data[s->top]) >= preced(symbol) && s->top!= -1 && s->data[s->top]!='(')
+                    postfix[j++] = pop(s);
+                    push(s, symbol);
+                    }
+                    break;
         }
     }
-return pop(s);
+}
+while(s->top != -1)
+    postfix[j++]=pop(s);
+    postfix[j] = '\0';
+    printf("\n postfix expression is %s",postfix);
 }
 int main(){
-char postfix[15];
+char infix[20];
 STACK s;
 s.top = -1;
-float res;
-printf("\n Read postfix expression \n");
-scanf("%s",postfix);
-res = Eval_postfix(&s, postfix);
-printf("\n The final answer is %f",res);
+printf("\n Read infix expression \n");
+scanf("%s",infix);
+infixtopostfix(&s,infix);
 return 0;
 }
