@@ -1,22 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-void TowerofHanoi(int n, char source, char dest, char temp)
-{
-
-    if (n>1)
-    {
-        TowerofHanoi(n-1,source,temp,dest);
-        printf("\n Move %d disc from %c to %c",n,source,dest);
-        TowerofHanoi(n-1, temp,dest,source);
-    }
-    else
-        printf("\n Move %d disc from %c to %c",n,source,dest);
+int gcd(int a,int b){
+    if(b == 0)
+        return a;
+        return gcd(b,a%b);
 }
-int main(){
-    int n;
-    printf("\n Read no. of discs:");
-    scanf("%d",&n);
-    TowerofHanoi(n,'s','D','T');
+    int main(){
+    int a,b,ans;
+    printf("\n read two numbers:");
+    scanf("%d %d", &a,&b);
+    ans = gcd(a,b);
+    printf("\n gcd of %d and %d is %d",a,b,ans);
     return 0;
-}
+    }
