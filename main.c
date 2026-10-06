@@ -1,76 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define SIZE 5
-struct queue{
-int front,rare;
-int data[SIZE];
-};
-typedef struct queue QUEUE;
-void enqueue(QUEUE *q,int item)
+
+void TowerofHanoi(int n, char source, char dest, char temp)
 {
 
-    if (q->rare == SIZE-1)
-        printf("\n stack is full");
-    else
+    if (n>1)
     {
-
-        q->rare = q->rare+1;
-        q->data[q->rare] = item;
-        if(q->front == -1)
-            q->front  = 0;
-    }
-}
-void dequeue(QUEUE *q)
-{
-    if (q->front == -1)
-        printf("\n Queue is empty");
-
-else{
-    printf("\n Element deleted is %d", q->data[q->front]);
-    if (q->front == q->rare)
-    {
-        q->front = -1;
-        q-> rare = -1;
+        TowerofHanoi(n-1,source,temp,dest);
+        printf("\n Move %d disc from %c to %c",n,source,dest);
+        TowerofHanoi(n-1, temp,dest,source);
     }
     else
-        q -> front = q->front+1;
-}
-}
-void display(QUEUE q){
-int i;
-if (q.front == -1)
-    printf("\n Queue is empty");
-else{
-    printf("\n The content of queue are \n");
-    for (i = q.front; i<=q.rare; i++)
-        printf("%d \t",q.data[i]);
-}
+        printf("\n Move %d disc from %c to %c",n,source,dest);
 }
 int main(){
-QUEUE q;
-q.front = -1;
-q.rare = -1;
-int item , ch;
-for(;;)
-{
-    printf("\n 1. Insert");
-    printf("\n 2. Delete");
-    printf("\n 3. Display");
-    printf("\n 4. Exit");
-    printf("\n Read choice:");
-    scanf("%d", &ch);
-    switch(ch){
-        case 1:
-            printf("\n Read elements to be inserted:");
-            scanf("%d", &item);
-            enqueue(&q,item);
-            break;
-        case 2: dequeue(&q);
-            break;
-        case 3: display(q);
-            break;
-        default: exit(0);
-    }
-}
-return 0;
+    int n;
+    printf("\n Read no. of discs:");
+    scanf("%d",&n);
+    TowerofHanoi(n,'s','D','T');
+    return 0;
 }
