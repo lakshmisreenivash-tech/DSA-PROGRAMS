@@ -1,63 +1,99 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define SIZE 5
-struct stack{
-int top;
-int data[SIZE];
+struct node
+{
+    int co,po;
+    struct node *addr;
 };
-typedef struct stack STACK;
-void push(STACK *s, int item){
-if(s->top==SIZE-1)
-    printf("\n stack overflow");
-else{
-    s->top=s->top + 1;
-    s->data[s->top]=item;
+typedef struct node *NODE;
+NODE insertend(NODE start,int co, int po)
+{
+    NODE temp, cur;
+    temp = (NODE)malloc(sizeof(struct node));
+    temp->co = co;
+    temp->po = po;
+    temp->addr = NULL;
+    if (start == NULL)
+        return temp;
+    cur = start;
+    while(cur -> addr != NULL)
+        cur = cur->addr;
+    cur->addr = temp;
+    return start;
 }
-}
-void pop(STACK *s){
-if(s->top == -1){
-    printf("\n stack underflow");
-}
-else{
-    printf("\n element poped is %d",s->data[s->top]);
-    s->top=s->top-1;
-}
-}
-void display(STACK s){
-int i;
-if(s.top == -1)
-    printf("\n stack is empty");
-else{
-    printf("\n content of stack \n");
-    for(i=s.top; i>=0; i--){
-        printf("%d\n",s.data[i]);
+void display(NODE start)
+{
+    NODE temp;
+    if (start == NULL)
+        printf("Polynomial is empty\n");
+    else
+    {
+        temp = start;
+        while(temp->addr != NULL)
+        {
+            printf("%d*x^%d+",temp->co,temp->po);
+            temp = temp->addr;
+        }
+        printf("%d*x^%d",temp->co,temp->po);
     }
 }
+NODE addterm(NODE res,int co,int po)
+{
+    NODE temp,cur;
+    temp = (NODE)malloc(sizeof(struct node));
+    temp->co = co;
+    temp->po = po;
+    temp->addr = NULL;
+    if (res==NULL)
+        return temp;
+    cur = res;
+    while(cur != NULL)
+    {
+        if (cur->po == po)
+        {
+            cur->co = cur->co+co;
+            return res;
+        }
+        cur = cur->addr;
+    }
+    if (cur == NULL)
+        res= insertend(res,co,po);
+    return res;
+}
+NODE multiply (NODE poly1,NODE poly2)
+{
+    NODE p1,p2,p3,res = NULL;
+    for (p1 = poly1; p1 != NULL; p1 = p1->addr)
+        for(p2 = poly2; p2 != NULL; p2 = p2->addr)
+        res = addterm(res,p1->co *p2->co,p1->po + p2->po);
+    return res;
 }
 int main()
 {
-    int item,ch;
-    STACK s;
-    s.top = -1;
-    for(;;){
-        printf("\n 1.push");
-        printf("\n 2.pop");
-        printf("\n 3.display");
-        printf("\n 4.Exit");
-        printf("\n Read a choice:");
-        scanf("%d",&ch);
-        switch(ch){
-        case 1:printf("\nRead element to be pushed:");
-        scanf("%d",&item);
-        push(&s,item);
-        break;
-        case 2: pop(&s);
-        break;
-        case 3: display(s);
-        break;
-        default:exit(0);
-
+    NODE poly1 = NULL,poly2 = NULL,poly;
+    int n,i,co,po;
+    printf("\n Read no. of terms of 1st polynomial:");
+    scanf("%d", &n);
+    for (i=1; i<=n;i++)
+    {
+        printf("\n Read co & po for %d term:", i);
+        scanf("%d %d", &co, &po);
+        poly1 = insertend(poly1,co,po);
     }
-}
-return 0;
+    printf("\n first polynomial is \n");
+    display(poly1);
+     printf("\n Read no. of terms of 2st polynomial:");
+    scanf("%d", &n);
+    for (i=1; i<=n;i++)
+    {
+        printf("\n Read co & po for %d term:", i);
+        scanf("%d %d", &co, &po);
+        poly2 = insertend(poly2,co,po);
+    }
+    printf("\n second polynomial is \n");
+    display(poly2);
+    poly = multiply(poly1,poly2);
+    printf("\n The resultant polynomial is \n");
+    display(poly);
+    return 0;
 }
